@@ -20,6 +20,8 @@ import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import Prism from 'prismjs'
 import "prismjs/components/prism-php";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -81,6 +83,16 @@ export default function Home() {
   const handleGenerate = (e) => {
     e.preventDefault()
     setIsGenerate(true)
+    toast.success('Generate Successfully!!', {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "dark",
+    });
   }
 
   const handleInputChange = (e, index) => {
@@ -100,9 +112,9 @@ export default function Home() {
         <title>Laravel CRUD Generator</title>
         <meta name="viewport" content="initial-scale=1, width=device-width" />
       </Head>
-      <div className="xl:w-[950px] w-[90vw] mx-auto border-2 font-poppins">
+      <div className="xl:w-[1000px] sm:w-[90vw] w-[95vw] mx-auto border-2 font-poppins">
         <p className="text-3xl font-semibold py-8">Laravel CRUD Generator</p>
-
+        <ToastContainer />
         <form onSubmit={handleGenerate} className="bg-white p-4 shadow-lg rounded">
           <div className="mb-8">
             <p className="text-sm mb-1">Model Name</p>
@@ -146,10 +158,10 @@ export default function Home() {
                         {index + 1}
                       </TableCell>
                       <TableCell align="left">
-                        <Input placeholder="input title" className="font-poppins text-sm" name="title" value={column.title} onChange={(e) => handleInputChange(e, index)} required />
+                        <Input placeholder="input title" className="font-poppins text-sm w-[180px]" name="title" value={column.title} onChange={(e) => handleInputChange(e, index)} required />
                       </TableCell>
                       <TableCell align="left">
-                        <Input placeholder="input data title" className="font-poppins text-sm" name="data_title" value={column.data_title} onChange={(e) => handleInputChange(e, index)} required />
+                        <Input placeholder="input data title" className="font-poppins text-sm w-[180px]" name="data_title" value={column.data_title} onChange={(e) => handleInputChange(e, index)} required />
                       </TableCell>
                       <TableCell align="left">
                       <FormControl className="w-[170px]">
@@ -170,7 +182,7 @@ export default function Home() {
                       </FormControl>
                       </TableCell>
                       <TableCell align="left">
-                        <Input placeholder="input validator" className="font-poppins text-sm" name="validator" value={column.validator} onChange={(e) => handleInputChange(e, index)} required />
+                        <Input placeholder="input validator" className="font-poppins text-sm w-[180px]" name="validator" value={column.validator} onChange={(e) => handleInputChange(e, index)} required />
                       </TableCell>
                       <TableCell align="left">
                         <DeleteIcon color="error" onClick={() => handleDeleteColumn(column.no)} />
@@ -196,10 +208,10 @@ export default function Home() {
               </Box>
               <TabPanel value={valueTabs} index={0}>
                   <p className="font-poppins text-sm font-medium mb-2">Command</p>
-                  <pre className="bg-[#343541] p-4 rounded-md mb-6"><code className="language-prism-php">php artisan make:model {model} -mcr</code></pre>
+                  <pre className="bg-[#343541] p-4 rounded-md mb-6 overflow-auto"><code className="language-prism-php">php artisan make:model {model} -mcr</code></pre>
 
                   <p className="font-poppins text-sm font-medium mb-2">Route</p>
-                  <pre className="bg-[#343541] p-4 rounded-md mb-6">
+                  <pre className="bg-[#343541] p-4 rounded-md mb-6 overflow-auto">
                     <code className="language-prism-php">
                       {`use App\\Http\\Controllers\\${model}Controller; 
 
@@ -208,14 +220,107 @@ Route::resource('/${model.toLowerCase()}', ${model}Controller::class);`}
                   </pre>
 
                   <p className="font-poppins text-sm font-medium mb-2">{model}Controller</p>
-                  <pre className="bg-[#343541] p-4 rounded-md mb-6">
+                  <pre className="bg-[#343541] p-4 rounded-md mb-6 overflow-auto">
                     <code className="language-prism-php">
-                      
+                      {`<?php
+
+namespace App\\Http\\Controllers;
+
+use App\\Models\\${model};
+use Illuminate\\Http\\Request;
+
+class ${model}Controller extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        return view('${model.toLowerCase()}.index', [
+            '${model.toLowerCase()}' => ${model}::all()
+        ]);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        return view('${model.toLowerCase()}.create');
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        $validate = $request->validate([
+            ${columns.map(column => `'${column.data_title}' => '${column.validator}', \n`).join('')}
+        ]);
+
+        ${model}::create($validate);
+
+        return redirect('/${model.toLowerCase()}');
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit($id)
+    {
+        $${model.toLowerCase()} = ${model}::find($id);
+
+        if (!$${model.toLowerCase()}) {
+            return redirect('/${model.toLowerCase()}');
+        }
+
+        return view('${model.toLowerCase()}.edit',[
+            '${model.toLowerCase()}' => $${model.toLowerCase()}
+        ]);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, $id)
+    {
+        $${model.toLowerCase()} = ${model}::find($id);
+
+        if (!$${model.toLowerCase()}) {
+            return redirect('/${model.toLowerCase()}');
+        }
+
+        $validate = $request->validate([
+          ${columns.map(column => `'${column.data_title}' => '${column.validator}', \n`).join('')}
+        ]);
+
+        $${model.toLowerCase()}->update($validate);
+
+        return redirect('/${model.toLowerCase()}');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy($id)
+    {
+        $${model.toLowerCase()} = ${model}::find($id);
+
+        if (!$${model.toLowerCase()}) {
+            return redirect('/${model.toLowerCase()}');
+        }
+
+        $${model.toLowerCase()}->delete();
+
+        return redirect('/${model.toLowerCase()}');
+    }
+}
+`}
                     </code>
                   </pre>
 
                   <p className="font-poppins text-sm font-medium mb-2">Model</p>
-                  <pre className="bg-[#343541] p-4 rounded-md mb-6">
+                  <pre className="bg-[#343541] p-4 rounded-md mb-6 overflow-auto">
                     <code className="language-prism-php">
                     {`<?php
 
@@ -235,7 +340,7 @@ class ${model} extends Model
                   </pre>
 
                   <p className="font-poppins text-sm font-medium mb-2">Migration</p>
-                  <pre className="bg-[#343541] p-4 rounded-md mb-6">
+                  <pre className="bg-[#343541] p-4 rounded-md mb-6 overflow-auto">
                     <code className="language-prism-php">
                     {`<?php
 
@@ -264,32 +369,77 @@ return new class extends Migration
                   </pre>
 
                   <p className="font-poppins text-sm font-medium mb-2">Index Table</p>
-                  <pre className="bg-[#343541] p-4 rounded-md mb-6">
+                  <pre className="bg-[#343541] p-4 rounded-md mb-6 overflow-auto">
                     <code className="language-prism-php">
-                      
+                      {`<table class="table table-striped container mt-5">
+  <thead>
+    <tr>
+<th scope="col">No</th>
+${columns.map(column => `<th scope="col">${column.title}</th> \n`).join('')}
+<th scope="col">Action</th>
+    </tr>
+  </thead>
+  <tbody>
+  @forelse ($${model.toLowerCase()} as $item)
+      <tr>
+          <th scope="row">{{$loop->iteration}}</th>
+          ${columns.map(column => `<td>{{$item->${column.data_title}}}</td> \n`).join('')}
+          <td>
+              <a href="/${model.toLowerCase()}/{{$item->id}}/edit" class="btn btn-warning">Edit</a>
+              <form action="/${model.toLowerCase()}/{{$item->id}}" method="post" class="d-inline" >
+              @method('DELETE')
+              @csrf
+              <button type="submit" class="btn btn-danger" >Delete</button>
+              </form>
+          </td>
+      </tr>
+  @empty
+      <tr>
+          <td>${model} not found</td>
+      </tr>
+  @endforelse
+  </tbody>
+</table>`}
                     </code>
                   </pre>
 
                   <p className="font-poppins text-sm font-medium mb-2">Create Form</p>
-                  <pre className="bg-[#343541] p-4 rounded-md mb-6">
+                  <pre className="bg-[#343541] p-4 rounded-md mb-6 overflow-auto">
                     <code className="language-prism-php">
-                      
+                      {`<form method="POST" action="/${model.toLowerCase()}" class="container mt-5">
+    @csrf
+    {
+${columns.map(column => `<div class="mb-3">
+<label for="${column.data_title}" class="form-label">${column.title}</label>
+<input type="text" name="${column.data_title}" class="form-control" id="${column.data_title}" placeholder="write ${column.data_title} here">
+</div> \n`).join('')}
+    }
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>`}
                     </code>
                   </pre>
 
                   <p className="font-poppins text-sm font-medium mb-2">Edit Form</p>
-                  <pre className="bg-[#343541] p-4 rounded-md mb-6">
+                  <pre className="bg-[#343541] p-4 rounded-md mb-6 overflow-auto">
                     <code className="language-prism-php">
-                      
+                      {`<form method="POST" action="/${model.toLowerCase()}/{{$${model.toLowerCase()}->id}}" class="container mt-5">
+    @method('PUT')
+    @csrf
+${columns.map(column => `<div class="mb-3">
+<label for="${column.data_title}" class="form-label">${column.title}</label>
+<input type="text" name="${column.data_title}" value="{{$${model.toLowerCase()}->${column.data_title}}}" class="form-control" id="${column.data_title}" placeholder="write ${column.data_title} here">
+</div> \n`).join('')}
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>`}
                     </code>
                   </pre>
               </TabPanel>
               <TabPanel value={valueTabs} index={1}>
                   <p className="font-poppins text-sm font-medium mb-2">Command</p>
-                  <pre className="bg-[#343541] p-4 rounded-md mb-6"><code className="language-prism-php">php artisan make:model {model} -mcr</code></pre>
+                  <pre className="bg-[#343541] p-4 rounded-md mb-6 overflow-auto"><code className="language-prism-php">php artisan make:model {model} -mcr</code></pre>
 
                   <p className="font-poppins text-sm font-medium mb-2">Route *api.php</p>
-                  <pre className="bg-[#343541] p-4 rounded-md mb-6">
+                  <pre className="bg-[#343541] p-4 rounded-md mb-6 overflow-auto">
                     <code className="language-prism-php">
                       {`use App\\Http\\Controllers\\${model}Controller; 
 
@@ -298,7 +448,7 @@ Route::resource('/${model.toLowerCase()}', ${model}Controller::class);`}
                   </pre>
 
                   <p className="font-poppins text-sm font-medium mb-2">{model}Controller</p>
-                  <pre className="bg-[#343541] p-4 rounded-md mb-6">
+                  <pre className="bg-[#343541] p-4 rounded-md mb-6 overflow-auto">
                     <code className="language-prism-php">
                       {`<?php
 
@@ -429,7 +579,7 @@ class ${model}Controller extends Controller
                   </pre>
 
                   <p className="font-poppins text-sm font-medium mb-2">Model</p>
-                  <pre className="bg-[#343541] p-4 rounded-md mb-6">
+                  <pre className="bg-[#343541] p-4 rounded-md mb-6 overflow-auto">
                     <code className="language-prism-php">
                       {`<?php
 
@@ -449,7 +599,7 @@ class ${model} extends Model
                   </pre>
 
                   <p className="font-poppins text-sm font-medium mb-2">Migration</p>
-                  <pre className="bg-[#343541] p-4 rounded-md mb-6">
+                  <pre className="bg-[#343541] p-4 rounded-md mb-6 overflow-auto">
                     <code className="language-prism-php">
                       {`<?php
 
