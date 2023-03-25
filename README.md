@@ -1,7 +1,7 @@
 ## CRUD Generator
 ---
 
-Tech Stack :
+Tech Stack 💻 :
   - Next JS
   - Material UI
   - Tailwind Css
