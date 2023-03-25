@@ -194,8 +194,8 @@ export default function Home() {
             </Table>
         </TableContainer>
         <div className="mt-4 flex justify-end items-center mb-8">
-          <Button variant="contained"  className="bg-blue-400 mr-3 capitalize" onClick={handleAddColumn} >Add Column</Button>
-          <Button variant="contained" className="bg-green-500 capitalize" type="submit" >Generate</Button>
+          <Button variant="contained"  className="bg-blue-400 mr-3 capitalize" color="primary" style={{marginRight: 10, textTransform: 'capitalize'}} onClick={handleAddColumn} >Add Column</Button>
+          <Button variant="contained" className="bg-green-500 capitalize" color="success" style={{textTransform: 'capitalize'}} type="submit" >Generate</Button>
         </div>
         {
           isGenerate &&
