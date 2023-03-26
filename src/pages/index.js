@@ -110,7 +110,28 @@ export default function Home() {
     <>
       <Head>
         <title>Laravel CRUD Generator</title>
-        <meta name="viewport" content="initial-scale=1, width=device-width" />
+        <meta
+  name='viewport'
+  content='minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, user-scalable=no, viewport-fit=cover'
+/>
+        <meta name="application-name" content="Laravel CRUD Generator" />
+<meta name="description" content="a website you can generate or create CRUD on Laravel Framework Automaticly" />
+<meta name="format-detection" content="telephone=no" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="msapplication-TileColor" content="#2B5797" />
+<meta name="msapplication-tap-highlight" content="no" />
+<meta name="theme-color" content="#000000" />
+
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon.png" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="mask-icon" href="/icons/favicon.png" color="#5bbad5" />
+<link rel="shortcut icon" href="/icons/favicon.png" />
+
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Laravel CRUD Generator" />
+<meta property="og:description" content="a website you can generate or create CRUD on Laravel Framework Automaticly" />
+<meta property="og:site_name" content="CRUD Generator" />
       </Head>
       <div className="xl:w-[1000px] sm:w-[90vw] w-[95vw] mx-auto border-2 font-poppins">
         <p className="text-3xl font-semibold py-8">Laravel CRUD Generator</p>
